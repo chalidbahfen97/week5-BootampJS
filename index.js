@@ -13,7 +13,7 @@ const app = express();
 
 app.use(express.json())
 app.use(express.urlencoded({extended : true}))
-app.use(cookieParser)
+app.use(cookieParser())
 app.use(helmet())
 app.use(compress())
 app.use(cors());
@@ -27,7 +27,10 @@ app.use("/eshopay/",(req,res) =>{
     res.send("Hello eshopay");
 });
 
+
 app.use("/category",routes.categoryRoute);
+app.use("/products",routes.productRoute);
+
 
 const dropDatabaseSync = false;
 

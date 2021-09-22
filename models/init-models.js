@@ -16,23 +16,23 @@ const sequelize = new Sequelize(
 )
 
 
-var DataTypes = require("sequelize").DataTypes;
-var _carts = require("./carts");
-var _category = require("./category");
-var _line_items = require("./line_items");
-var _orders = require("./orders");
-var _product_images = require("./product_images");
-var _products = require("./products");
-var _users = require("./users");
+const DataTypes = require("sequelize").DataTypes;
+const _carts = require("./carts");
+const _category = require("./category");
+const _line_items = require("./line_items");
+const _orders = require("./orders");
+const _product_images = require("./product_images");
+const _products = require("./products");
+const _users = require("./users");
 
-const models =()=> {
-  var carts = _carts(sequelize, DataTypes);
-  var category = _category(sequelize, DataTypes);
-  var line_items = _line_items(sequelize, DataTypes);
-  var orders = _orders(sequelize, DataTypes);
-  var product_images = _product_images(sequelize, DataTypes);
-  var products = _products(sequelize, DataTypes);
-  var users = _users(sequelize, DataTypes);
+const initModels =(sequelize)=> {
+  const carts = _carts(sequelize, DataTypes);
+  const category = _category(sequelize, DataTypes);
+  const line_items = _line_items(sequelize, DataTypes);
+  const orders = _orders(sequelize, DataTypes);
+  const product_images = _product_images(sequelize, DataTypes);
+  const products = _products(sequelize, DataTypes);
+  const users = _users(sequelize, DataTypes);
 
   products.belongsTo(category, { as: "prod_cate", foreignKey: "prod_cate_id"});
   category.hasMany(products, { as: "products", foreignKey: "prod_cate_id"});
@@ -55,6 +55,8 @@ const models =()=> {
     users,
   };
 }
+
+const models = initModels(sequelize);
 
 export default models;
 export {sequelize};
