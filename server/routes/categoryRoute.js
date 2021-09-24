@@ -5,6 +5,7 @@ const router = Router();
 
 router.get("/rawSQL",IndexController.categoryController.findCategoryBySQL);
 router.get("/",IndexController.categoryController.findAllRows);
+router.get("/detail",IndexController.categoryController.cateProducts);
 router.get("/:id",IndexController.categoryController.findRowById);
 
 router.post("/",IndexController.categoryController.createRow);

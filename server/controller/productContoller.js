@@ -15,7 +15,6 @@ const findProductsBySQL = async (req, res) => {
     return res.send(error);
   }
 };
-
 const findAllRows = async (req, res) => {
   try {
     const result = await req.context.models.products.findAll();

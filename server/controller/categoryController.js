@@ -25,6 +25,19 @@ const findAllRows = async (req, res) => {
   }
 };
 
+const cateProducts = async (req, res) => {
+  try {
+    const result = await req.context.models.category.findAll({
+      include : [{
+        model : req.context.models.products
+      }]
+    });
+    return res.send(result);
+  } catch (error) {
+    return res.send(error);
+  }
+};
+
 const findRowById = async (req, res) => {
   try {
     const result = await req.context.models.category.findByPk(req.params.id);
@@ -77,6 +90,7 @@ const deleteRow = async (req, res) => {
 export default {
   findCategoryBySQL,
   findAllRows,
+  cateProducts,
   findRowById,
   createRow,
   updateRow,
