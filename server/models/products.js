@@ -11,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(100),
       allowNull: true
     },
-    prod_proce: {
+    prod_price: {
       type: DataTypes.DECIMAL,
       allowNull: true
     },
@@ -46,6 +46,10 @@ module.exports = function(sequelize, DataTypes) {
         model: 'category',
         key: 'cate_id'
       }
+    },
+    prod_stock: {
+      type: DataTypes.INTEGER,
+      allowNull: true
     }
   }, {
     sequelize,

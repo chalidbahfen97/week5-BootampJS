@@ -23,13 +23,13 @@ app.use(async(req,res,next)=>{
     next();
 });
 
-app.use("/eshopay/",(req,res) =>{
+app.use(process.env.URL_DOMAIN,(req,res) =>{
     res.send("Hello eshopay");
 });
 
 
-app.use("/category",routes.categoryRoute);
-app.use("/products",routes.productRoute);
+app.use(process.env.URL_API+"/category",routes.categoryRoute);
+app.use(process.env.URL_API+"/products",routes.productRoute);
 
 
 const dropDatabaseSync = false;

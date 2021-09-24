@@ -6,6 +6,7 @@ const router = Router();
 router.get("/rawSQL",IndexController.productContoller.findProductsBySQL);
 router.get("/",IndexController.productContoller.findAllRows);
 router.get("/:id",IndexController.productContoller.findRowById);
+router.get("/images/:fileName",IndexController.productContoller.showProductImage);
 
 router.post("/",IndexController.productContoller.createRow);
 

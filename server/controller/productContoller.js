@@ -4,11 +4,12 @@ import fs from 'fs';
 import path from "path";
 import { from } from "responselike";
 import { error } from "console";
+import { fileURLToPath } from "url";
 
 const findProductsBySQL = async (req, res) => {
   try {
     const result = await sequelize.query(
-      `select prod_id,prod_name,prod_proce,prod_desc,prod_url_image,
+      `select prod_id,prod_name,prod_price,prod_desc,prod_url_image,
       prod_rating,prod_view_count,prod_user_id,prod_cate_id from products`,
       {
         type: sequelize.QueryTypes.SELECT,
@@ -85,7 +86,7 @@ const createRow = async (req, res) => {
     try{
       const result = await req.context.models.products.create({
         prod_name : fields.prod_name,
-        prod_proce : fields.prod_proce,
+        prod_price : fields.prod_price,
         prod_desc : fields.prod_desc,
         prod_url_image : urlImage,
         prod_rating : parseInt(fields.prod_rating),
@@ -102,15 +103,27 @@ const createRow = async (req, res) => {
         error : error
       })
     }
-
   })
+}
+
+const showProductImage = async (req,res) =>{
+  const fileName = req.params.fileName;
+  const url =`${process.cwd()}/${process.env.UPLOAD_DIR}/${fileName}`
+  fs.createReadStream(url)
+    .on(error,() => responseNotFound(req,res))
+    .pipe(res);
+}
+
+function responseNotFound(req,res){
+  res.writeHead(404,{"Content-Type" : "text/plain"});
+  res.end("Not Found");
 }
 
 const updateRow = async (req, res) => {
   try {
     const {
       prod_name,
-      prod_proce,
+      prod_price,
       prod_desc,
       prod_url_image,
       prod_rating,
@@ -121,7 +134,7 @@ const updateRow = async (req, res) => {
     const result = await req.context.models.products.update(
       {
         prod_name: prod_name,
-        prod_proce: prod_proce,
+        prod_price: prod_price,
         prod_desc: prod_desc,
         prod_url_image: prod_url_image,
         prod_rating: prod_rating,
@@ -156,6 +169,7 @@ export default {
   findAllRows,
   findRowById,
   createRow,
+  showProductImage,
   updateRow,
-  deleteRow,
+  deleteRow
 };
