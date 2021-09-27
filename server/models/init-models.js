@@ -36,14 +36,14 @@ const initModels =(sequelize)=> {
 
   products.belongsTo(category, {foreignKey: "prod_cate_id"});
   category.hasMany(products, {foreignKey: "prod_cate_id"});
-  product_images.belongsTo(products, { as: "prim_prod", foreignKey: "prim_prod_id"});
-  products.hasMany(product_images, { as: "product_images", foreignKey: "prim_prod_id"});
-  carts.belongsTo(users, { as: "cart_user", foreignKey: "cart_user_id"});
-  users.hasMany(carts, { as: "carts", foreignKey: "cart_user_id"});
-  orders.belongsTo(users, { as: "order_user", foreignKey: "order_user_id"});
-  users.hasMany(orders, { as: "orders", foreignKey: "order_user_id"});
-  products.belongsTo(users, { as: "prod_user", foreignKey: "prod_user_id"});
-  users.hasMany(products, { as: "products", foreignKey: "prod_user_id"});
+  product_images.belongsTo(products, {foreignKey: "prim_prod_id"});
+  products.hasMany(product_images, {foreignKey: "prim_prod_id"});
+  carts.belongsTo(users, {foreignKey: "cart_user_id"});
+  users.hasMany(carts, {foreignKey: "cart_user_id"});
+  orders.belongsTo(users, {foreignKey: "order_user_id"});
+  users.hasMany(orders, {foreignKey: "order_user_id"});
+  products.belongsTo(users, {foreignKey: "prod_user_id"});
+  users.hasMany(products, {foreignKey: "prod_user_id"});
 
   return {
     carts,
