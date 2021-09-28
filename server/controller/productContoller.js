@@ -5,6 +5,7 @@ import path from "path";
 import { from } from "responselike";
 import { error } from "console";
 import { fileURLToPath } from "url";
+import upDowloadHelper from "../helpers/upDowloadHelper";
 
 const findProductsBySQL = async (req, res) => {
   try {
@@ -121,34 +122,35 @@ function responseNotFound(req,res){
 
 const updateRow = async (req, res) => {
   try {
-    const {
-      prod_name,
-      prod_price,
-      prod_desc,
-      prod_url_image,
-      prod_rating,
-      prod_view_count,
-      prod_user_id,
-      prod_cate_id,
-    } = req.body;
-    const result = await req.context.models.products.update(
-      {
-        prod_name: prod_name,
-        prod_price: prod_price,
-        prod_desc: prod_desc,
-        prod_url_image: prod_url_image,
-        prod_rating: prod_rating,
-        prod_view_count: prod_view_count,
-        prod_user_id: prod_user_id,
-        prod_cate_id: prod_cate_id,
-      },
-      { returning: true, where: { prod_id: req.params.id } }
-    );
-    return res.send(result);
+    const singlePart = await upDowloadHelper.uploadSingleFile(req);
+    const {attr:{file,fields,filename},status : {status}} = singlePart;
+    if (status === `succeed`) {
+      try {
+        const result = await req.context.models.products.update({
+          prod_name : fields.prod_name,
+          prod_price : fields.prod_price,
+          prod_desc : fields.prod_desc,
+          prod_url_image : filename,
+          prod_rating : parseInt(fields.prod_rating),
+          prod_view_count : parseInt(fields.prod_view_count),
+          prod_user_id : parseInt(fields.prod_user_id),
+          prod_cate_id : parseInt(fields.prod_cate_id),
+          prod_stock : parseInt(fields.prod_stock)
+        },
+        {returning : true, where : {prod_id : parseInt(req.params.id)} }
+        );
+
+        return res.send(result);
+
+      } catch (error) {
+        return res.sendStatus(404).send(error);
+      }
+    }
   } catch (error) {
-    return res.send(error);
+    return res.sendStatus(404).send(error);
   }
-};
+}
+
 
 const deleteRow = async (req, res) => {
   const id = req.params.id;
