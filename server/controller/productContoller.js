@@ -107,19 +107,6 @@ const createRow = async (req, res) => {
   })
 }
 
-const showProductImage = async (req,res) =>{
-  const fileName = req.params.fileName;
-  const url =`${process.cwd()}/${process.env.UPLOAD_DIR}/${fileName}`
-  fs.createReadStream(url)
-    .on(error,() => responseNotFound(req,res))
-    .pipe(res);
-}
-
-function responseNotFound(req,res){
-  res.writeHead(404,{"Content-Type" : "text/plain"});
-  res.end("Not Found");
-}
-
 const updateRow = async (req, res) => {
   try {
     const singlePart = await upDowloadHelper.uploadSingleFile(req);
@@ -151,6 +138,38 @@ const updateRow = async (req, res) => {
   }
 }
 
+const createProductImage =  async (req,res,next) =>{
+  try {
+    const multiPart = await upDowloadHelper.uploadMultipleFile(req);
+    const {attr:{files,fields},status : {status}} = multiPart;
+    try {
+      const result = await req.context.models.products.create({
+        prod_name : fields.prod_name,
+        prod_price : fields.prod_price,
+        prod_desc : fields.prod_desc,
+        prod_url_image : "",
+        prod_rating : parseInt(fields.prod_rating),
+        prod_view_count : parseInt(fields.prod_view_count),
+        prod_user_id : parseInt(fields.prod_user_id),
+        prod_cate_id : parseInt(fields.prod_cate_id),
+        prod_stock : parseInt(fields.prod_stock)
+      });
+
+      req.prodId = result.dataValues.prod_id;
+      req.files = files;
+      next();
+
+      return res.send(result);
+
+    } catch (error) {
+      
+    }
+    console.log();
+  } catch (error) {
+    
+  }
+}
+
 
 const deleteRow = async (req, res) => {
   const id = req.params.id;
@@ -171,7 +190,7 @@ export default {
   findAllRows,
   findRowById,
   createRow,
-  showProductImage,
   updateRow,
+  createProductImage,
   deleteRow
 };
