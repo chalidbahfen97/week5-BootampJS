@@ -4,14 +4,11 @@ module.exports = function(sequelize, DataTypes) {
     order_name: {
       type: DataTypes.STRING(25),
       allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('ord_id'),
       primaryKey: true
     },
-    order_createdon: {
+    order_created_on: {
       type: DataTypes.DATEONLY,
-      allowNull: true
-    },
-    order_total_qty: {
-      type: DataTypes.INTEGER,
       allowNull: true
     },
     order_subtotal: {
@@ -23,23 +20,27 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     order_tax: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     order_total_due: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.INTEGER,
       allowNull: true
     },
-    order_address: {
-      type: DataTypes.STRING(500),
+    order_total_qty: {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
-    order_phone: {
-      type: DataTypes.STRING(15),
+    order_trx_number: {
+      type: DataTypes.STRING(100),
       allowNull: true
     },
     order_city: {
       type: DataTypes.STRING(20),
+      allowNull: true
+    },
+    order_address: {
+      type: DataTypes.STRING(500),
       allowNull: true
     },
     order_status: {
