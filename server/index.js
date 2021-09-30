@@ -27,11 +27,10 @@ app.use(process.env.URL_DOMAIN,(req,res) =>{
     res.send("Hello eshopay");
 });
 
-
 app.use(process.env.URL_API+"/category",routes.categoryRoute);
+app.use(process.env.URL_API+"/carts",routes.cartRoute);
 app.use(process.env.URL_API+"/products",routes.productRoute);
 app.use(process.env.URL_API+"/users",routes.userRoute);
-
 
 const dropDatabaseSync = false;
 
