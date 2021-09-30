@@ -1,6 +1,6 @@
 import { sequelize } from "../models/init-models";
 import formidable from "formidable";
-import fs from 'fs';
+import fs from "fs";
 import path from "path";
 import { from } from "responselike";
 import { error } from "console";
@@ -42,93 +42,98 @@ const findRowById = async (req, res) => {
 };
 
 const createRow = async (req, res) => {
-  const uploadDir = process.cwd()+'/storages/';
+  const uploadDir = process.cwd() + "/storages/";
 
   const options = {
-    multiplies : true,
-    keepExtensions : true,
-    uploadDir : uploadDir,
-    maxFileSize : 50 * 1024 * 1024
-  }
+    multiplies: true,
+    keepExtensions: true,
+    uploadDir: uploadDir,
+    maxFileSize: 50 * 1024 * 1024,
+  };
 
   const form = formidable(options);
 
-  form.onPart = function(part){
-    if(!part.filename || part.filename.match(/\.(jpg|jpeg|png)$/i)){
-      this.handlePart(part)
-    }else{
-      form._error(new Error("File type is not supported"))
+  form.onPart = function (part) {
+    if (!part.filename || part.filename.match(/\.(jpg|jpeg|png)$/i)) {
+      this.handlePart(part);
+    } else {
+      form._error(new Error("File type is not supported"));
     }
-  }
+  };
 
-  form.parse(req,async(error,fields,files)=>{
-    if(error){
+  form.parse(req, async (error, fields, files) => {
+    if (error) {
       return res.status(400).json({
-        status : "error",
-        message : error.message,
-        error : error.stack
-      })
+        status: "error",
+        message: error.message,
+        error: error.stack,
+      });
     }
 
-    if(files.uploadFile.length > 1){
+    if (files.uploadFile.length > 1) {
       return res.status(400).json({
-        status : "error",
-        message : "only one file allowed",
-        error : null
-      })
+        status: "error",
+        message: "only one file allowed",
+        error: null,
+      });
     }
 
     const uploadFile = files.uploadFile.path;
     const seq = path.sep;
-    const urlImage = uploadFile.substr(uploadFile.lastIndexOf(seq),uploadFile.length).replace(seq,"");
+    const urlImage = uploadFile
+      .substr(uploadFile.lastIndexOf(seq), uploadFile.length)
+      .replace(seq, "");
 
     const atr = fields;
 
-    try{
+    try {
       const result = await req.context.models.products.create({
-        prod_name : fields.prod_name,
-        prod_price : fields.prod_price,
-        prod_desc : fields.prod_desc,
-        prod_url_image : urlImage,
-        prod_rating : parseInt(fields.prod_rating),
-        prod_view_count : parseInt(fields.prod_view_count),
-        prod_user_id : parseInt(fields.prod_user_id),
-        prod_cate_id : parseInt(fields.prod_cate_id),
-        prod_stock : parseInt(fields.prod_stock)
+        prod_name: fields.prod_name,
+        prod_price: fields.prod_price,
+        prod_desc: fields.prod_desc,
+        prod_url_image: urlImage,
+        prod_rating: parseInt(fields.prod_rating),
+        prod_view_count: parseInt(fields.prod_view_count),
+        prod_user_id: parseInt(fields.prod_user_id),
+        prod_cate_id: parseInt(fields.prod_cate_id),
+        prod_stock: parseInt(fields.prod_stock),
       });
       return res.send(result);
-    }catch (error){
+    } catch (error) {
       return res.status(404).json({
-        status : "Failed",
-        message : "",
-        error : error
-      })
+        status: "Failed",
+        message: "",
+        error: error,
+      });
     }
-  })
-}
+  });
+};
 
 const updateRow = async (req, res) => {
   try {
     const singlePart = await upDowloadHelper.uploadSingleFile(req);
-    const {attr:{file,fields,filename},status : {status}} = singlePart;
+    const {
+      attr: { file, fields, filename },
+      status: { status },
+    } = singlePart;
     if (status === `succeed`) {
       try {
-        const result = await req.context.models.products.update({
-          prod_name : fields.prod_name,
-          prod_price : fields.prod_price,
-          prod_desc : fields.prod_desc,
-          prod_url_image : filename,
-          prod_rating : parseInt(fields.prod_rating),
-          prod_view_count : parseInt(fields.prod_view_count),
-          prod_user_id : parseInt(fields.prod_user_id),
-          prod_cate_id : parseInt(fields.prod_cate_id),
-          prod_stock : parseInt(fields.prod_stock)
-        },
-        {returning : true, where : {prod_id : parseInt(req.params.id)} }
+        const result = await req.context.models.products.update(
+          {
+            prod_name: fields.prod_name,
+            prod_price: fields.prod_price,
+            prod_desc: fields.prod_desc,
+            prod_url_image: filename,
+            prod_rating: parseInt(fields.prod_rating),
+            prod_view_count: parseInt(fields.prod_view_count),
+            prod_user_id: parseInt(fields.prod_user_id),
+            prod_cate_id: parseInt(fields.prod_cate_id),
+            prod_stock: parseInt(fields.prod_stock),
+          },
+          { returning: true, where: { prod_id: parseInt(req.params.id) } }
         );
 
         return res.send(result);
-
       } catch (error) {
         return res.sendStatus(404).send(error);
       }
@@ -136,40 +141,39 @@ const updateRow = async (req, res) => {
   } catch (error) {
     return res.sendStatus(404).send(error);
   }
-}
+};
 
-const createProductImage =  async (req,res,next) =>{
+const createProductImage = async (req, res, next) => {
   try {
     const multiPart = await upDowloadHelper.uploadMultipleFile(req);
-    const {attr:{files,fields},status : {status}} = multiPart;
+    const {
+      files,
+      fields,
+      status: { status },
+    } = multiPart;
     try {
       const result = await req.context.models.products.create({
-        prod_name : fields.prod_name,
-        prod_price : fields.prod_price,
-        prod_desc : fields.prod_desc,
-        prod_url_image : "",
-        prod_rating : parseInt(fields.prod_rating),
-        prod_view_count : parseInt(fields.prod_view_count),
-        prod_user_id : parseInt(fields.prod_user_id),
-        prod_cate_id : parseInt(fields.prod_cate_id),
-        prod_stock : parseInt(fields.prod_stock)
+        prod_name: fields.prod_name,
+        prod_price: fields.prod_price,
+        prod_desc: fields.prod_desc,
+        prod_url_image: "",
+        prod_rating: parseInt(fields.prod_rating),
+        prod_view_count: parseInt(fields.prod_view_count),
+        prod_user_id: parseInt(fields.prod_user_id),
+        prod_cate_id: parseInt(fields.prod_cate_id),
+        prod_stock: parseInt(fields.prod_stock),
       });
 
       req.prodId = result.dataValues.prod_id;
       req.files = files;
       next();
-
-      return res.send(result);
-
     } catch (error) {
-      
+      return res.sendStatus(404).send(error);
     }
-    console.log();
   } catch (error) {
-    
+    return res.sendStatus(404).send(error);
   }
-}
-
+};
 
 const deleteRow = async (req, res) => {
   const id = req.params.id;
@@ -192,5 +196,5 @@ export default {
   createRow,
   updateRow,
   createProductImage,
-  deleteRow
+  deleteRow,
 };
