@@ -34,20 +34,6 @@ const findRowById = async (req, res) => {
   }
 };
 
-/*
-const userCarts = async (req, res) => {
-    try {
-      const result = await req.context.models.carts.findAll({
-        include : [{
-          model : req.context.models.users
-        }]
-      });
-      return res.send(result);
-    } catch (error) {
-      return res.send(error);
-    }
-  };
-*/
 
 const createRow = async (req, res) => {
   try {
@@ -57,6 +43,71 @@ const createRow = async (req, res) => {
       cart_createdon : cart_createdon,
       cart_status : cart_status,
       cart_user_id : cart_user_id
+    });
+    return res.send(result);
+  } catch (error) {
+    return res.send(error);
+  }
+};
+
+const createLineItems = async (req, res) =>{
+  try {
+    const {lite_prod_id , lite_cart_id, lite_qty, lite_price, lite_total_price, lite_status, lite_order_name} = req.body;
+    const result = await req.context.models.line_items.create({
+      lite_prod_id : lite_prod_id,
+      lite_cart_id : lite_cart_id,
+      lite_qty : lite_qty,
+      lite_price : lite_price,
+      lite_total_price : lite_total_price,
+      lite_status : lite_status,
+      lite_order_name : lite_order_name
+    });
+    return res.send(result);
+  } catch (error) {
+    return res.send(error);
+  }
+}
+
+const createOrder = async (req, res) =>{
+  try {
+    const {order_name,
+      order_created_on,
+      order_subtotal,
+      order_discount,
+      order_tax,
+      order_total_due,
+      order_total_qty ,
+      order_trx_number,
+      order_city,
+      order_address,
+      order_status,
+      order_user_id} = req.body;
+    const result = await req.context.models.line_items.create({
+      order_name : order_name,
+      order_created_on : order_created_on,
+      order_subtotal : order_subtotal,
+      order_discount : order_discount,
+      order_tax : order_tax,
+      order_total_due : order_total_due,
+      order_total_qty : order_total_qty,
+      order_trx_number : order_trx_number,
+      order_city : order_city,
+      order_address : order_address,
+      order_status : order_status,
+      order_user_id : order_user_id
+    });
+    return res.send(result);
+  } catch (error) {
+    return res.send(error);
+  }
+}
+
+const liteCarts = async (req, res) => {
+  try {
+    const result = await req.context.models.carts.findAll({
+      include : [{
+        model : req.context.models.line_items
+      }]
     });
     return res.send(result);
   } catch (error) {
@@ -98,8 +149,10 @@ export default {
   findcartsBySQL,
   findAllRows,
   findRowById,
-  // userCarts,
   createRow,
+  createLineItems,
+  createOrder,
+  liteCarts,
   updateRow,
   deleteRow
 };

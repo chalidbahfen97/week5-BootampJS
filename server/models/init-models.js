@@ -34,14 +34,30 @@ const initModels =(sequelize)=> {
   const products = _products(sequelize, DataTypes);
   const users = _users(sequelize, DataTypes);
 
+  carts.belongsToMany(products, {through: line_items, foreignKey: "lite_cart_id", otherKey: "lite_prod_id" });
+  products.belongsToMany(carts, {through: line_items, foreignKey: "lite_prod_id", otherKey: "lite_cart_id" });
+
+  line_items.belongsTo(carts, { foreignKey: "lite_cart_id"});
+  carts.hasMany(line_items, {foreignKey: "lite_cart_id"});
+
   products.belongsTo(category, {foreignKey: "prod_cate_id"});
   category.hasMany(products, {foreignKey: "prod_cate_id"});
+
+  line_items.belongsTo(orders, {foreignKey: "lite_order_name"});
+  orders.hasMany(line_items, {foreignKey: "lite_order_name"});
+
+  line_items.belongsTo(products, {foreignKey: "lite_prod_id"});
+  products.hasMany(line_items, {foreignKey: "lite_prod_id"});
+
   product_images.belongsTo(products, {foreignKey: "prim_prod_id"});
   products.hasMany(product_images, {foreignKey: "prim_prod_id"});
+
   carts.belongsTo(users, {foreignKey: "cart_user_id"});
   users.hasMany(carts, {foreignKey: "cart_user_id"});
+
   orders.belongsTo(users, {foreignKey: "order_user_id"});
   users.hasMany(orders, {foreignKey: "order_user_id"});
+  
   products.belongsTo(users, {foreignKey: "prod_user_id"});
   users.hasMany(products, {foreignKey: "prod_user_id"});
 

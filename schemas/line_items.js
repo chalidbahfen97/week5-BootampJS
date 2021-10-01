@@ -4,12 +4,20 @@ module.exports = function(sequelize, DataTypes) {
     lite_prod_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      references: {
+        model: 'products',
+        key: 'prod_id'
+      }
     },
     lite_cart_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      references: {
+        model: 'carts',
+        key: 'cart_id'
+      }
     },
     lite_qty: {
       type: DataTypes.INTEGER,
@@ -29,7 +37,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     lite_order_name: {
       type: DataTypes.STRING(25),
-      allowNull: true
+      allowNull: true,
+      references: {
+        model: 'orders',
+        key: 'order_name'
+      }
     }
   }, {
     sequelize,
