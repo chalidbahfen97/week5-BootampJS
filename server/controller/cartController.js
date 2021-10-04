@@ -1,6 +1,6 @@
 import { sequelize } from "../models/init-models";
 
-const findcartsBySQL = async (req, res) => {
+const findCartsBySQL = async (req, res) => {
   try {
     const result = await sequelize.query(
       "select cart_id, cart_createdon, cart_status, cart_user_id from carts",
@@ -16,7 +16,7 @@ const findcartsBySQL = async (req, res) => {
   }
 };
 
-const findAllRows = async (req, res) => {
+const findCartRows = async (req, res) => {
   try {
     const result = await req.context.models.carts.findAll();
     return res.send(result);
@@ -25,7 +25,7 @@ const findAllRows = async (req, res) => {
   }
 };
 
-const findRowById = async (req, res) => {
+const findCartRowsById = async (req, res) => {
   try {
     const result = await req.context.models.carts.findByPk(req.params.id);
     return res.send(result);
@@ -35,7 +35,7 @@ const findRowById = async (req, res) => {
 };
 
 
-const createRow = async (req, res) => {
+const createCarts = async (req, res) => {
   try {
     const { cart_id, cart_createdon, cart_status, cart_user_id } = req.body;
     const result = await req.context.models.carts.create({
@@ -70,18 +70,8 @@ const createLineItems = async (req, res) =>{
 
 const createOrder = async (req, res) =>{
   try {
-    const {order_name,
-      order_created_on,
-      order_subtotal,
-      order_discount,
-      order_tax,
-      order_total_due,
-      order_total_qty ,
-      order_trx_number,
-      order_city,
-      order_address,
-      order_status,
-      order_user_id} = req.body;
+    const {order_name, order_created_on, order_subtotal, order_discount, order_tax, order_total_due, order_total_qty, order_trx_number, 
+      order_city, order_address, order_status, order_user_id} = req.body;
     const result = await req.context.models.line_items.create({
       order_name : order_name,
       order_created_on : order_created_on,
@@ -115,7 +105,7 @@ const liteCarts = async (req, res) => {
   }
 };
 
-const updateRow = async (req, res) => {
+const updateCarts = async (req, res) => {
   try {
     const { cart_createdon, cart_status, cart_user_id } = req.body;
     const result = await req.context.models.carts.update(
@@ -131,7 +121,7 @@ const updateRow = async (req, res) => {
   }
 };
 
-const deleteRow = async (req, res) => {
+const deleteCarts = async (req, res) => {
   const id = req.params.id;
   await req.context.models.carts
     .destroy({
@@ -146,13 +136,13 @@ const deleteRow = async (req, res) => {
 };
 
 export default {
-  findcartsBySQL,
-  findAllRows,
-  findRowById,
-  createRow,
+  findCartsBySQL,
+  findCartRows,
+  findCartRowsById,
+  createCarts,
   createLineItems,
   createOrder,
   liteCarts,
-  updateRow,
-  deleteRow
+  updateCarts,
+  deleteCarts
 };
