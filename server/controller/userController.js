@@ -1,95 +1,58 @@
-import { sequelize } from "../models/init-models";
+import bcrypt from 'bcrypt';
+const SALT_ROUND = 10;
 
-const findUsersBySQL = async (req, res) => {
-  try {
-    const result = await sequelize.query(
-      "select user_id, user_name, user_firstname, user_lastname, user_email, user_password, user_phone from users",
-      {
-        type: sequelize.QueryTypes.SELECT,
-        model: req.context.models.users,
-        mapToModel: true,
-      }
-    );
-    return res.send(result);
-  } catch (error) {
-    return res.send(error);
-  }
-};
+const signup = async (req, res) => {
+    const { username,user_firstname,user_lastname,email, user_password,user_phone } = req.body;
 
-const findAllRows = async (req, res) => {
-  try {
-    const result = await req.context.models.users.findAll();
-    return res.send(result);
-  } catch (error) {
-    return res.send(error);
-  }
-};
+    let hashPassword = user_password;
+    hashPassword = await bcrypt.hash(hashPassword, SALT_ROUND);
+    try {
+        const result = await req.context.models.users.create({
+            user_name: username,
+            user_firstname : user_firstname,
+            user_lastname : user_lastname,
+            user_email: email,
+            user_password: hashPassword,
+            user_phone : user_phone
 
-const findRowById = async (req, res) => {
-  try {
-    const result = await req.context.models.users.findByPk(req.params.id);
-    return res.send(result);
-  } catch (error) {
-    return res.send(error);
-  }
-};
+        });
+        const {user_name,user_email} = result.dataValues;
+        res.send({user_name,user_email});
+    } catch (error) {
+        res.sendStatus(404).send(error);
+    }
 
-const createRow = async (req, res) => {
-  try {
-    const { user_id, user_name, user_firstname, user_lastname, user_email, user_password, user_phone } = req.body;
-    const result = await req.context.models.users.create({
-      user_id : user_id,
-      user_name : user_name,
-      user_firstname : user_firstname,
-      user_lastname : user_lastname,
-      user_email : user_email,
-      user_password : user_password,
-      user_phone : user_phone
-    });
-    return res.send(result);
-  } catch (error) {
-    return res.send(error);
-  }
-};
+        /*  test dulu   
+        
+        let userPassword = user_password
+        userPassword = await bcrypt.hash(userPassword,SALT_ROUND);
+        console.log(userPassword);
+    
+        console.log(await bcrypt.compare("rahasia",userPassword));
+        console.log(await bcrypt.compare("rahasiax",userPassword)); */
+}
 
-const updateRow = async (req, res) => {
-  try {
-    const { user_name, user_firstname, user_lastname, user_email, user_password, user_phone } = req.body;
-    const result = await req.context.models.users.update(
-      { user_name: user_name, 
-        user_firstname : user_firstname,
-        user_lastname : user_lastname,
-        user_email : user_email,
-        user_password : user_password,
-        user_phone : user_phone
-    },
-      { returning: true, where: { user_id: req.params.id } }
-    );
-    return res.send(result);
-  } catch (error) {
-    return res.send(error);
-  }
-};
+const signin = async(req,res)=>{
+    const {email,password} = req.body;
 
-const deleteRow = async (req, res) => {
-  const id = req.params.id;
-  await req.context.models.users
-    .destroy({
-      where: { user_id: id },
-    })
-    .then((result) => {
-      return res.send("delete " + result + " rows");
-    })
-    .catch((error) => {
-      return res.sendStatus(404).send("Data Not Found");
-    });
-};
+    try {
+        const result = await req.context.models.users.findOne({
+            where : {user_email : email}
+        });
+        const {user_name,user_email,user_password} = result.dataValues;
+        const compare = await bcrypt.compare(password,user_password);
+        if(compare){
+            return res.send({user_name,user_email});
+        }else{
+            return res.sendStatus(404);
+        }
+        
+    } catch (error) {
+        return res.sendStatus(404);
+    }
+}
 
 export default {
-  findUsersBySQL,
-  findAllRows,
-  findRowById,
-  createRow,
-  updateRow,
-  deleteRow
-};
+    signup,
+    signin
+}
